@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'calling_trainee.dart';
+import 'administrateur.dart';
 
 class HomeScreen extends StatefulWidget {
   final String nom;
@@ -22,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String? selectedEtablissement;
   String? selectedSpecialite;
   String? selectedGroup;
+  String? selectedRole;
 
   final TextEditingController _groupNameController = TextEditingController();
   int nombreStagiaires = 0;
@@ -58,8 +60,6 @@ class _HomeScreenState extends State<HomeScreen> {
     List<String> stagiaires = stagiairesControllers
         .map((e) => e.text.trim())
         .toList();
-
-    // Vérifier qu’aucun stagiaire n’est vide
     if (stagiaires.any((name) => name.isEmpty)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -85,35 +85,41 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF367CFE),
-      appBar: AppBar(
-        title: const Text('Bienvenue !'),
-        backgroundColor: const Color(0xFF427EEF),
-        elevation: 0,
-      ),
-      body: Column(
+      body: Stack(
         children: [
-          const SizedBox(height: 20),
-          if (widget.imageFile != null)
-            CircleAvatar(
-              radius: 60,
-              backgroundImage: FileImage(widget.imageFile!),
+          Positioned(
+            top: 60,
+            left: 0,
+            right: 0,
+            child: Column(
+              children: [
+                if (widget.imageFile != null)
+                  CircleAvatar(
+                    radius: 60,
+                    backgroundImage: FileImage(widget.imageFile!),
+                  ),
+                const SizedBox(height: 10),
+                Text(
+                  "Bienvenue ${widget.nom} ${widget.prenom} !",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-          const SizedBox(height: 20),
-
-          Expanded(
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            top: 200,
             child: Container(
               padding: const EdgeInsets.all(16),
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
               ),
               child: ListView(
                 children: [
@@ -122,19 +128,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   DropdownButtonFormField<String>(
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Colors.grey[300],
-                      border: const OutlineInputBorder(),
+                      fillColor: Colors.grey[200],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                     items: const [
                       DropdownMenuItem(value: "cfifj", child: Text("CFIFJ")),
                       DropdownMenuItem(value: "cfpms", child: Text("CFPMS")),
                     ],
                     value: selectedEtablissement,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedEtablissement = value;
-                      });
-                    },
+                    onChanged: (value) =>
+                        setState(() => selectedEtablissement = value),
                   ),
                   const SizedBox(height: 16),
 
@@ -143,10 +148,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   DropdownButtonFormField<String>(
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Colors.grey[300],
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF427EEF)),
+                      fillColor: Colors.grey[200],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                     items: const [
@@ -188,11 +192,37 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                     value: selectedSpecialite,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedSpecialite = value;
-                      });
-                    },
+                    onChanged: (value) =>
+                        setState(() => selectedSpecialite = value),
+                  ),
+                  const SizedBox(height: 16),
+
+                  const Text("Rôle"),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: "formateur",
+                        child: Text("Formateur"),
+                      ),
+                      DropdownMenuItem(
+                        value: "administrateur",
+                        child: Text("Administrateur"),
+                      ),
+                      DropdownMenuItem(
+                        value: "responsable",
+                        child: Text("Responsable de classe"),
+                      ),
+                    ],
+                    value: selectedRole,
+                    onChanged: (value) => setState(() => selectedRole = value),
                   ),
                   const SizedBox(height: 16),
 
@@ -200,9 +230,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Text("Choisir un groupe existant"),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: "Choisir un groupe",
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                       items: groupes
                           .map(
@@ -213,11 +246,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                           .toList(),
                       value: selectedGroup,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedGroup = value;
-                        });
-                      },
+                      onChanged: (value) =>
+                          setState(() => selectedGroup = value),
                     ),
                     const SizedBox(height: 20),
                   ],
@@ -284,10 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: const Text(
                         "Créer le groupe",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
@@ -303,30 +330,33 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       onPressed: () {
+                        if (selectedEtablissement == null ||
+                            selectedSpecialite == null ||
+                            selectedRole == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                "Veuillez remplir tous les champs.",
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (selectedRole == 'administrateur') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const CalendarPage(),
+                            ),
+                          );
+                          return;
+                        }
+
                         if (selectedGroup == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text("Veuillez sélectionner un groupe."),
-                            ),
-                          );
-                          return;
-                        }
-                        if (selectedEtablissement == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                "Veuillez sélectionner un établissement.",
-                              ),
-                            ),
-                          );
-                          return;
-                        }
-                        if (selectedSpecialite == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                "Veuillez sélectionner une spécialité.",
-                              ),
+                              content: Text("Veuillez choisir un groupe."),
                             ),
                           );
                           return;
@@ -336,6 +366,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           (g) => g['name'] == selectedGroup,
                           orElse: () => {'stagiaires': <String>[]},
                         );
+
                         final stagiaires = List<String>.from(
                           groupe['stagiaires'],
                         );
@@ -353,15 +384,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       },
                       child: const Text(
-                        'Soumettre',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        "Continuer",
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
                 ],
               ),
             ),

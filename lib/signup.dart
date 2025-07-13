@@ -35,148 +35,139 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       backgroundColor: const Color(0xFF427EEF),
-      body: Stack(
-        children: [
-          // Rectangle gris clair
-          Positioned(
-            top: 112,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: screenHeight - 112,
-              decoration: const BoxDecoration(
-                color: Color(0xFFD9D9D9),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
-              ),
-            ),
-          ),
-
-          // Cercle photo
-          Positioned(
-            left: (MediaQuery.of(context).size.width - 119) / 2,
-            top: 31,
-            child: GestureDetector(
-              onTap: _pickImage,
-              child: Container(
-                width: 119,
-                height: 137.47,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFF367CFE),
-                  border: Border.all(color: Colors.white, width: 2),
-                  image: _image != null
-                      ? DecorationImage(
-                          image: FileImage(_image!),
-                          fit: BoxFit.cover,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Photo de profil
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: GestureDetector(
+                onTap: _pickImage,
+                child: Container(
+                  width: 119,
+                  height: 119,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFF367CFE),
+                    border: Border.all(color: Colors.white, width: 2),
+                    image: _image != null
+                        ? DecorationImage(
+                            image: FileImage(_image!),
+                            fit: BoxFit.cover,
+                          )
+                        : null,
+                  ),
+                  child: _image == null
+                      ? const Center(
+                          child: Icon(
+                            Icons.camera_alt,
+                            color: Colors.white,
+                            size: 30,
+                          ),
                         )
                       : null,
                 ),
-                child: _image == null
-                    ? const Center(
-                        child: Icon(
-                          Icons.camera_alt,
-                          color: Colors.white,
-                          size: 30,
-                        ),
-                      )
-                    : null,
               ),
             ),
-          ),
 
-          // Formulaire
-          Positioned(
-            top: 200,
-            left: 34,
-            right: 34,
-            child: Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    buildField(_nomController, "Nom"),
-                    const SizedBox(height: 15),
-                    buildField(_prenomController, "Prénom"),
-                    const SizedBox(height: 15),
-                    buildField(
-                      _emailController,
-                      "Email",
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    const SizedBox(height: 15),
-                    buildField(
-                      _passwordController,
-                      "Mot de passe",
-                      obscureText: true,
-                    ),
-                    const SizedBox(height: 15),
-                    buildField(
-                      _confirmPasswordController,
-                      "Confirmation de mot de passe",
-                      obscureText: true,
-                    ),
-                    const SizedBox(height: 15),
-                    buildField(
-                      _pinController,
-                      "PIN",
-                      obscureText: true,
-                      keyboardType: TextInputType.number,
-                    ),
-                    const SizedBox(height: 30),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // Bouton
-          Positioned(
-            bottom: 40,
-            left: (MediaQuery.of(context).size.width - 175) / 2,
-            child: SizedBox(
-              width: 175,
-              height: 52,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF6AC259),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+            // Formulaire dans un Expanded pour prendre tout l'espace disponible
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(top: 20),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFD9D9D9),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
                   ),
                 ),
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HomeScreen(
-                          nom: _nomController.text,
-                          prenom: _prenomController.text,
-                          imageFile: _image,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 34,
+                    vertical: 20,
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        buildField(_nomController, "Nom"),
+                        const SizedBox(height: 15),
+                        buildField(_prenomController, "Prénom"),
+                        const SizedBox(height: 15),
+                        buildField(
+                          _emailController,
+                          "Email",
+                          keyboardType: TextInputType.emailAddress,
                         ),
-                      ),
-                    );
-                  }
-                },
-                child: const Text(
-                  'Créer votre compte',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Colors.white,
+                        const SizedBox(height: 15),
+                        buildField(
+                          _passwordController,
+                          "Mot de passe",
+                          obscureText: true,
+                        ),
+                        const SizedBox(height: 15),
+                        buildField(
+                          _confirmPasswordController,
+                          "Confirmation de mot de passe",
+                          obscureText: true,
+                        ),
+                        const SizedBox(height: 15),
+                        buildField(
+                          _pinController,
+                          "PIN",
+                          obscureText: true,
+                          keyboardType: TextInputType.number,
+                        ),
+                        const SizedBox(height: 30),
+                        // Bouton fixe en bas du formulaire
+                        SizedBox(
+                          width: 175,
+                          height: 52,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF6AC259),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HomeScreen(
+                                      nom: _nomController.text,
+                                      prenom: _prenomController.text,
+                                      imageFile: _image,
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            child: const Text(
+                              'Créer votre compte',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ), // Espace supplémentaire en bas
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

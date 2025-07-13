@@ -86,6 +86,7 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           // Ellipse 700x700
@@ -105,20 +106,6 @@ class _LoginScreenState extends State<LoginScreen>
                     blurRadius: 12,
                   ),
                 ],
-              ),
-            ),
-          ),
-          // Texte "Welcome back"
-          const Positioned(
-            left: 40,
-            top: 120,
-            child: Text(
-              'Welcome\nback',
-              style: TextStyle(
-                fontSize: 38,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                height: 1.5,
               ),
             ),
           ),
@@ -148,81 +135,99 @@ class _LoginScreenState extends State<LoginScreen>
               ),
             ),
           ),
-          // Formulaire login
-          Positioned(
-            left: 36,
-            top: 396,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Email field
-                Container(
-                  width: 303,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Center(
-                      child: TextField(
-                        decoration: InputDecoration.collapsed(
-                          hintText: 'Your Email@ofppt-edu.ma',
-                          hintStyle: TextStyle(color: Color(0xFF707B81)),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                // Mot de passe field
-                Container(
-                  width: 303,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Center(
-                      child: TextField(
-                        obscureText: true,
-                        decoration: InputDecoration.collapsed(
-                          hintText: 'Mot de passe',
-                          hintStyle: TextStyle(color: Color(0xFF707B81)),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 40),
-                // Sign in text
-                const Text(
-                  'Sign in',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
+
+          // Texte "Welcome back"
+          const Positioned(
+            left: 40,
+            top: 120,
+            child: Text(
+              'Welcome\nback',
+              style: TextStyle(
+                fontSize: 38,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                height: 1.5,
+              ),
             ),
           ),
+
+          // Formulaire Scrollable
+          Positioned.fill(
+            top: 300,
+            bottom: 120,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 36),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 100),
+                  // Email
+                  Container(
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Center(
+                        child: TextField(
+                          decoration: InputDecoration.collapsed(
+                            hintText: 'Your Email@ofppt-edu.ma',
+                            hintStyle: TextStyle(color: Color(0xFF707B81)),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Mot de passe
+                  Container(
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Center(
+                        child: TextField(
+                          obscureText: true,
+                          decoration: InputDecoration.collapsed(
+                            hintText: 'Mot de passe',
+                            hintStyle: TextStyle(color: Color(0xFF707B81)),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  const Text(
+                    'Sign in',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
           // Bouton flèche avec navigation vers HomeScreen
           Positioned(
-            left: 275,
-            top: 566,
+            right: 36,
+            bottom: 100,
             child: GestureDetector(
               onTap: () {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => HomeScreen(
-                      nom: 'TonNom', // à remplacer par valeur saisie
+                      nom: 'TonNom',
                       prenom: 'TonPrénom',
-                      imageFile: null, // ou File si tu as l'image
+                      imageFile: null,
                     ),
                   ),
                 );
@@ -240,43 +245,47 @@ class _LoginScreenState extends State<LoginScreen>
               ),
             ),
           ),
-          // Texte "Sign up"
+
+          // Boutons en bas fixés
           Positioned(
             left: 36,
+            right: 36,
             bottom: 30,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SignUpScreen()),
-                );
-              },
-              child: const Text(
-                'Sign up',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                  decoration: TextDecoration.underline,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SignUpScreen(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Sign up',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
-          // Texte "Forgot password?"
-          Positioned(
-            left: 220,
-            bottom: 30,
-            child: GestureDetector(
-              onTap: () {
-                // Action à définir
-              },
-              child: const Text(
-                'Forgot password?',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                  decoration: TextDecoration.underline,
+                GestureDetector(
+                  onTap: () {
+                    // Action "Forgot password"
+                  },
+                  child: const Text(
+                    'Forgot password?',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ],
