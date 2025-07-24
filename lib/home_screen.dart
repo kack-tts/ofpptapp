@@ -24,11 +24,27 @@ class _HomeScreenState extends State<HomeScreen> {
   String? selectedSpecialite;
   String? selectedGroup;
   String? selectedRole;
+  String? selectedVille;
+  String? selectedSecteur;
+
+  final Map<String, Map<String, List<String>>> villesData = {
+    "Casablanca": {
+      "Hay Hassani": ["CFIFJ", "CFPMS"],
+      "Sidi Maarouf": ["CFIFJ"],
+      "Sidi Moumen": ["CFPMS"],
+      "Tit Mellil": ["CFPMS"],
+    },
+    "Settat": {
+      "Centre Ville": ["CFPMS"],
+    },
+    "El Jadida": {
+      "Zone Industrielle": ["CFIFJ"],
+    },
+  };
 
   final TextEditingController _groupNameController = TextEditingController();
   int nombreStagiaires = 0;
   List<TextEditingController> stagiairesControllers = [];
-
   List<Map<String, dynamic>> groupes = [];
 
   void updateControllers(int count) {
@@ -60,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
     List<String> stagiaires = stagiairesControllers
         .map((e) => e.text.trim())
         .toList();
+
     if (stagiaires.any((name) => name.isEmpty)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -123,7 +140,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: ListView(
                 children: [
-                  const Text("Établissement"),
+                  // Ville
+                  const Text("Ville"),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
                     decoration: InputDecoration(
@@ -133,70 +151,144 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    items: const [
-                      DropdownMenuItem(value: "cfifj", child: Text("CFIFJ")),
-                      DropdownMenuItem(value: "cfpms", child: Text("CFPMS")),
-                    ],
-                    value: selectedEtablissement,
-                    onChanged: (value) =>
-                        setState(() => selectedEtablissement = value),
+                    items: villesData.keys
+                        .map(
+                          (ville) => DropdownMenuItem(
+                            value: ville,
+                            child: Text(ville),
+                          ),
+                        )
+                        .toList(),
+                    value: selectedVille,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedVille = value;
+                        selectedSecteur = null;
+                        selectedEtablissement = null;
+                      });
+                    },
                   ),
                   const SizedBox(height: 16),
 
-                  const Text("Spécialité"),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  // Secteur
+                  if (selectedVille != null) ...[
+                    const Text("Secteur"),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
+                      items: villesData[selectedVille]!.keys
+                          .map(
+                            (secteur) => DropdownMenuItem(
+                              value: secteur,
+                              child: Text(secteur),
+                            ),
+                          )
+                          .toList(),
+                      value: selectedSecteur,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedSecteur = value;
+                          selectedEtablissement = null;
+                        });
+                      },
                     ),
-                    items: const [
-                      DropdownMenuItem(
-                        value: "infrastructure",
-                        child: Text("Infrastructure Digitale"),
-                      ),
-                      DropdownMenuItem(
-                        value: "developpement",
-                        child: Text("Développement"),
-                      ),
-                      DropdownMenuItem(
-                        value: "electrique",
-                        child: Text("Génie Électrique"),
-                      ),
-                      DropdownMenuItem(
-                        value: "design",
-                        child: Text("Digital Design"),
-                      ),
-                      DropdownMenuItem(
-                        value: "génie",
-                        child: Text("Génie Civil"),
-                      ),
-                      DropdownMenuItem(
-                        value: "TRI",
-                        child: Text("TRI : Réseaux Informatiques"),
-                      ),
-                      DropdownMenuItem(
-                        value: "TDI",
-                        child: Text("TDI : Développement Informatique"),
-                      ),
-                      DropdownMenuItem(
-                        value: "TSGE",
-                        child: Text("TSGE : Gestion des Entreprises"),
-                      ),
-                      DropdownMenuItem(
-                        value: "TSC",
-                        child: Text("TSC : Commerce"),
-                      ),
-                    ],
-                    value: selectedSpecialite,
-                    onChanged: (value) =>
-                        setState(() => selectedSpecialite = value),
-                  ),
-                  const SizedBox(height: 16),
+                    const SizedBox(height: 16),
+                  ],
 
+                  // Établissement
+                  if (selectedSecteur != null) ...[
+                    const Text("Établissement"),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      items: villesData[selectedVille]![selectedSecteur]!
+                          .map(
+                            (etab) => DropdownMenuItem(
+                              value: etab,
+                              child: Text(etab),
+                            ),
+                          )
+                          .toList(),
+                      value: selectedEtablissement,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedEtablissement = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
+                  // Spécialité
+                  if (selectedEtablissement != null) ...[
+                    const Text("Spécialité"),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                          value: "infrastructure",
+                          child: Text("Infrastructure Digitale"),
+                        ),
+                        DropdownMenuItem(
+                          value: "developpement",
+                          child: Text("Développement"),
+                        ),
+                        DropdownMenuItem(
+                          value: "electrique",
+                          child: Text("Génie Électrique"),
+                        ),
+                        DropdownMenuItem(
+                          value: "design",
+                          child: Text("Digital Design"),
+                        ),
+                        DropdownMenuItem(
+                          value: "génie",
+                          child: Text("Génie Civil"),
+                        ),
+                        DropdownMenuItem(
+                          value: "TRI",
+                          child: Text("TRI : Réseaux Informatiques"),
+                        ),
+                        DropdownMenuItem(
+                          value: "TDI",
+                          child: Text("TDI : Développement Informatique"),
+                        ),
+                        DropdownMenuItem(
+                          value: "TSGE",
+                          child: Text("TSGE : Gestion des Entreprises"),
+                        ),
+                        DropdownMenuItem(
+                          value: "TSC",
+                          child: Text("TSC : Commerce"),
+                        ),
+                      ],
+                      value: selectedSpecialite,
+                      onChanged: (value) =>
+                          setState(() => selectedSpecialite = value),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
+                  // Rôle
                   const Text("Rôle"),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
@@ -226,6 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 16),
 
+                  // Groupes existants
                   if (groupes.isNotEmpty) ...[
                     const Text("Choisir un groupe existant"),
                     const SizedBox(height: 8),
@@ -252,6 +345,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 20),
                   ],
 
+                  // Créer un nouveau groupe
                   const Text("Créer un nouveau groupe"),
                   const SizedBox(height: 8),
                   TextFormField(
@@ -283,6 +377,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 16),
 
+                  // Champs pour les noms des stagiaires
                   if (stagiairesControllers.isNotEmpty)
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -303,6 +398,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   const SizedBox(height: 16),
 
+                  // Bouton pour créer le groupe
                   Center(
                     child: ElevatedButton(
                       onPressed: createGroup,
@@ -320,6 +416,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 20),
 
+                  // Bouton Continuer
                   Center(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
